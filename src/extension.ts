@@ -8,7 +8,7 @@ const pylosCommands = [
   'Build',
   'Build with test',
   'Claim',
-  'Claim procession',
+  'Claim processing',
   'Clinical informatics',
   'CRM',
   'Doctor discovery',
@@ -161,6 +161,8 @@ function createOrReuseTerminal(terminalName: string, cwd?: string) {
     (terminal) => terminal.name === terminalName
   );
   if (existingTerminal) {
+    const processId = existingTerminal.processId;
+    existingTerminal.sendText(`kill -9 ${processId}`, true);
     existingTerminal.dispose();
   }
 
