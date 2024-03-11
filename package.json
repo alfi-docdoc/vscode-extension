@@ -2,6 +2,7 @@
   "name": "docdoc",
   "displayName": "Run Pylos service",
   "description": "Run Pylos service with vscode extention",
+  "repository": "https://github.com/alfi-docdoc/vscode-extension.git",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.87.0"
