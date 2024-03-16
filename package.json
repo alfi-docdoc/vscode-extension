@@ -1,11 +1,11 @@
 {
   "name": "docdoc",
-  "displayName": "Run Pylos service",
-  "description": "Run Pylos service with vscode extention",
+  "displayName": "Run Socrates service",
+  "description": "Run Puro & Pylos service with vscode extension",
   "repository": "https://github.com/alfi-docdoc/vscode-extension.git",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.87.0"
+    "vscode": "^1.80.0"
   },
   "categories": [
     "Other"
@@ -26,11 +26,13 @@
     "commands": [
       {
         "command": "pylos.run",
-        "title": "Run Pylos service"
+        "title": "Run Pylos service",
+        "category": "Docdoc"
       },
       {
         "command": "puro.run",
-        "title": "Run Puro serve"
+        "title": "Run Puro service",
+        "category": "Docdoc"
       }
     ]
   },

@@ -2,39 +2,40 @@ import * as vscode from 'vscode';
 
 let pylosPath: string | undefined;
 
-const pylosCommands = [
-  'All pylos microservices',
-  'Local infra',
-  'Build',
-  'Build with test',
-  'Claim',
-  'Claim processing',
-  'Clinical informatics',
-  'CRM',
-  'Doctor discovery',
-  'Document generation',
-  'Document storage',
-  'General knowledge',
-  'Internal staff',
-  'Member',
-  'Policy',
-  'Profile management',
-  'Provider',
-  'Provider organization',
-  'Standalone reporting',
-  'User',
-] as const;
-type pylosCommandType = (typeof pylosCommands)[number];
+const pylosCommands: Record<string, number | null> = {
+  'All pylos microservices': null,
+  'Local infra': null,
+  'Build': null,
+  'Build with test': null,
+  'Claim': 5,
+  'Claim processing': 0,
+  'Clinical informatics': 6,
+  'Communication': 13,
+  'CRM': 12,
+  'Doctor discovery': 11,
+  'Document generation': 16,
+  'Document storage': 7,
+  'EHR': 17,
+  'General knowledge': 4,
+  'Internal staff': 10,
+  'Member': 2,
+  'Policy': 1,
+  'Profile management': 14,
+  'Provider': 9,
+  'Provider organization': 8,
+  'Standalone reporting': 15,
+  'User': 3,
+};
 
 const puroApps = [
   'All micro-frontend',
   'Authentication',
-  'Claim operation',
+  'Claim operations',
   'Engineering',
   'Material',
   'Member',
   'Member services',
-  'Organization-representative',
+  'Organization representative',
   'Provider',
   'Provider Services',
   'Shell',
@@ -45,9 +46,9 @@ export function activate(context: vscode.ExtensionContext) {
   // ----
   // Register Pylos commands
   const pylos = vscode.commands.registerCommand('pylos.run', async () => {
-    const cmd = (await vscode.window.showQuickPick(pylosCommands, {
+    const cmd = await vscode.window.showQuickPick(Object.keys(pylosCommands), {
       matchOnDescription: true,
-    })) as pylosCommandType;
+    });
 
     // run only when user choose command to run
     if (!cmd) {
@@ -82,19 +83,11 @@ export function activate(context: vscode.ExtensionContext) {
         )
         .then((answer) => {
           if (answer === 'Continue') {
-            pylosCommands
-              .filter(
-                (c) =>
-                  ![
-                    'Local infra',
-                    'Build',
-                    'Build with test',
-                    'All pylos microservices',
-                  ].includes(c)
-              )
-              .forEach((c) => {
+            Object.keys(pylosCommands).forEach((c) => {
+              if (pylosCommands[c] !== null) {
                 pylosCreateTerminal(c);
-              });
+              }
+            });
           }
         });
 
@@ -119,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(pylos, puro);
 }
 
-function pylosCreateTerminal(command: pylosCommandType) {
+function pylosCreateTerminal(command: string) {
   const terminal = createOrReuseTerminal(command, pylosPath);
 
   switch (command) {
@@ -137,8 +130,14 @@ function pylosCreateTerminal(command: pylosCommandType) {
       break;
     default: {
       const microService = command.replaceAll(' ', '-').toLowerCase();
+      const msPort = 8100 + pylosCommands[command]!;
+      const grpcPort = 9100 + pylosCommands[command]!;
       terminal.sendText(
-        `./mvnw -pl apps/${microService} spring-boot:run -Dspring-boot.run.profiles=local -P deployment `,
+        `lsof -ti:${msPort},${grpcPort} && kill -9 $(lsof -ti:${msPort},${grpcPort})`,
+        true
+      );
+      terminal.sendText(
+        `./mvnw -pl apps/${microService} spring-boot:run -Dspring-boot.run.profiles=local -P deployment`,
         true
       );
     }
