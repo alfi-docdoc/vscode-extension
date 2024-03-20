@@ -8,7 +8,6 @@ const pylosCommands: Record<string, number | null> = {
   'Build': null,
   'Build with test': null,
   'Claim': 5,
-  'Claim processing': 0,
   'Clinical informatics': 6,
   'Communication': 13,
   'CRM': 12,
@@ -113,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function pylosCreateTerminal(command: string) {
-  const terminal = createOrReuseTerminal(command, pylosPath);
+  const terminal = createOrReuseTerminal('Pylos: ' +command, pylosPath);
 
   switch (command) {
     case 'Build':
@@ -145,7 +144,7 @@ function pylosCreateTerminal(command: string) {
 }
 
 function puroCreateTerminal(command: PuroCommandType) {
-  const terminal = createOrReuseTerminal(command);
+  const terminal = createOrReuseTerminal('Puro: ' + command);
 
   if (command === 'All micro-frontend') {
     terminal.sendText('pnpm start', true);
